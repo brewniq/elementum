@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import { useState, useEffect, useRef } from "react";
 
 /* ─── STYLES ─────────────────────────────────────────────────────────────── */
@@ -136,9 +137,21 @@ const css = `
   .footer-address { font-size: 0.875rem; color: #555; line-height: 1.7; }
   .footer-bottom { border-top: 0.5px solid var(--border); padding-top: 1.5rem; text-align: center; font-size: 0.8rem; color: #888; max-width: 1100px; margin: 0 auto; }
 
-  /* REVEAL */
-  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
+  /* REVEAL ANIMATIONS */
+  .reveal        { opacity: 0; transform: translateY(60px);           transition: opacity 0.9s cubic-bezier(.16,1,.3,1), transform 0.9s cubic-bezier(.16,1,.3,1); }
+  .reveal-left   { opacity: 0; transform: translateX(-80px);          transition: opacity 0.9s cubic-bezier(.16,1,.3,1), transform 0.9s cubic-bezier(.16,1,.3,1); }
+  .reveal-right  { opacity: 0; transform: translateX(80px);           transition: opacity 0.9s cubic-bezier(.16,1,.3,1), transform 0.9s cubic-bezier(.16,1,.3,1); }
+  .reveal-scale  { opacity: 0; transform: scale(0.85);                transition: opacity 0.9s cubic-bezier(.16,1,.3,1), transform 0.9s cubic-bezier(.16,1,.3,1); }
+  .reveal-rotate { opacity: 0; transform: translateY(40px) rotate(-3deg); transition: opacity 0.9s cubic-bezier(.16,1,.3,1), transform 0.9s cubic-bezier(.16,1,.3,1); }
+  .reveal.visible, .reveal-left.visible, .reveal-right.visible,
+  .reveal-scale.visible, .reveal-rotate.visible {
+    opacity: 1; transform: none;
+  }
+  .delay-1 { transition-delay: 0.1s !important; }
+  .delay-2 { transition-delay: 0.2s !important; }
+  .delay-3 { transition-delay: 0.3s !important; }
+  .delay-4 { transition-delay: 0.4s !important; }
+  .delay-5 { transition-delay: 0.5s !important; }
 
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
@@ -181,19 +194,19 @@ const quoteCss = `.test-card::before { content: '${openQ}${openQ}'; position: ab
 .test-card::after  { content: '${closeQ}${closeQ}'; position: absolute; bottom: 1.5rem; right: 2rem; font-size: 2rem; color: #c9b8f0; line-height: 1; font-family: Georgia, serif; }`;
 
 /* ─── REVEAL HOOK ──────────────────────────────────────────────────────────── */
-function useReveal() {
+function useReveal(variant = "reveal") {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (!ref.current) return;
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { threshold: 0.12 }
+      { threshold: 0.08 }
     );
     observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
-  return { ref, visible };
+  return { ref, className: `${variant}${visible ? " visible" : ""}` };
 }
 
 /* ─── NAVBAR ───────────────────────────────────────────────────────────────── */
@@ -201,10 +214,10 @@ function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <nav className="nav">
-      <a href="#" className="nav-logo">Elementum</a>
+      <a href="/" className="nav-logo">Elementum</a>
       <ul className={`nav-links${menuOpen ? " open" : ""}`}>
         {["Home","Studio","Services","Contact","FAQ's"].map(l => (
-          <li key={l}><a href="#" onClick={() => setMenuOpen(false)}>{l}</a></li>
+          <li key={l}><a href="/" onClick={() => setMenuOpen(false)}>{l}</a></li>
         ))}
       </ul>
       <button
@@ -272,7 +285,7 @@ function FeatureRow({ heading, text, reversed = false }) {
       <div>
         <h2 className="feat-heading" dangerouslySetInnerHTML={{ __html: heading }} />
         <p className="feat-p">{text}</p>
-        <a href="#" className="read-more">Read more &nbsp;→</a>
+        <a href="/" className="read-more">Read more &nbsp;→</a>
       </div>
       <div className="feat-img-placeholder" style={{ position:"relative" }}>
         {!reversed && (
@@ -320,7 +333,7 @@ function Services() {
                 <td className="service-label">{s.label}</td>
                 <td><span className="service-name">{s.name}</span></td>
                 <td style={{ textAlign:"right" }}>
-                  <a href="#" className="service-arrow">→</a>
+                  <a href="/" className="service-arrow">→</a>
                 </td>
               </tr>
             ))}
@@ -386,7 +399,7 @@ function Newsletter() {
       <div ref={ref} style={{ position:"relative", zIndex:2 }} className={`reveal${visible?" visible":""}`}>
         <h2>Subscribe to<br />our newsletter</h2>
         <p>To make your stay special and even more memorable</p>
-        <a href="#" className="subscribe-btn">Subscribe Now</a>
+        <a href="/" className="subscribe-btn">Subscribe Now</a>
       </div>
     </section>
   );
@@ -399,15 +412,15 @@ function Footer() {
       <div className="footer-grid">
         <div className="footer-col">
           <h4>Company</h4>
-          <ul>{["Home","Studio","Service","Blog"].map(l=><li key={l}><a href="#">{l}</a></li>)}</ul>
+          <ul>{["Home","Studio","Service","Blog"].map(l=><li key={l}><a href="/">{l}</a></li>)}</ul>
         </div>
         <div className="footer-col">
           <h4>Terms &amp; Policies</h4>
-          <ul>{["Privacy Policy","Terms & Conditions","Explore","Accessibility"].map(l=><li key={l}><a href="#">{l}</a></li>)}</ul>
+          <ul>{["Privacy Policy","Terms & Conditions","Explore","Accessibility"].map(l=><li key={l}><a href="/">{l}</a></li>)}</ul>
         </div>
         <div className="footer-col">
           <h4>Follow Us</h4>
-          <ul>{["Instagram","LinkedIn","Youtube","Twitter"].map(l=><li key={l}><a href="#">{l}</a></li>)}</ul>
+          <ul>{["Instagram","LinkedIn","Youtube","Twitter"].map(l=><li key={l}><a href="/">{l}</a></li>)}</ul>
         </div>
         <div className="footer-col">
           <h4>Terms &amp; Policies</h4>
