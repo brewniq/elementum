@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 
 /* ─── STYLES ─────────────────────────────────────────────────────────────── */
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300;1,9..144,400&family=DM+Sans:wght@400;500;700;800&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -19,7 +19,7 @@ const css = `
     --off-white: #f8f7f4;
     --border: rgba(0,0,0,0.08);
     --font-display: 'Fraunces', Georgia, serif;
-    --font-sans: 'Cabinet Grotesk', sans-serif;
+    --font-sans: 'DM Sans', sans-serif;
   }
 
   html { scroll-behavior: smooth; }
@@ -47,7 +47,7 @@ const css = `
   }
   .nav-links a:hover { opacity: 0.5; }
   .nav-hamburger {
-    display: none; flex-direction: column; gap: 5px;
+    display: flex; flex-direction: column; gap: 5px;
     cursor: pointer; padding: 4px; background: none; border: none;
   }
   .nav-hamburger span {
@@ -82,6 +82,7 @@ const css = `
   section { padding: 7rem 3rem; }
 
   /* FEATURES */
+  .features-section { background: #fff; padding: 7rem 3rem; position: relative; overflow: hidden; }
   .features-row { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; max-width: 1100px; margin: 0 auto 6rem; }
   .features-row.reverse { direction: rtl; }
   .features-row.reverse > * { direction: ltr; }
@@ -91,10 +92,11 @@ const css = `
   .feat-p { font-size: 0.95rem; color: #555; line-height: 1.75; margin-bottom: 1.5rem; max-width: 420px; }
   .read-more { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--black); text-decoration: none; border-bottom: 1px solid var(--black); padding-bottom: 1px; transition: gap 0.2s; }
   .read-more:hover { gap: 0.85rem; }
-  .feat-img-placeholder { width: 100%; aspect-ratio: 1; border-radius: 50%; background: linear-gradient(135deg, #e8e4de, #d4cec8); display: flex; align-items: center; justify-content: center; position: relative; }
+  .feat-img-wrap { width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; position: relative; }
+  .feat-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   /* SERVICES */
-  .services { background: var(--off-white); }
+  .services { background: var(--off-white); position: relative; overflow: hidden; }
   .services-inner { max-width: 1100px; margin: 0 auto; }
   .services-heading { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 300; letter-spacing: -0.03em; margin-bottom: 3.5rem; line-height: 1.1; }
   .services-table { width: 100%; border-collapse: collapse; }
@@ -114,10 +116,9 @@ const css = `
   .test-layout { display: flex; align-items: center; gap: 3rem; }
   .test-avatars { display: flex; flex-direction: column; gap: 1.5rem; align-items: center; }
   .test-card { flex: 1; background: #f5f3ef; border-radius: 20px; padding: 2.5rem 2.75rem; font-family: var(--font-display); font-size: 1.05rem; line-height: 1.7; text-align: center; color: #333; font-style: italic; position: relative; }
-  /* test-card quotes injected separately */
-
   .test-blob { border-radius: 50%; background: var(--purple); flex-shrink: 0; }
-  .test-avatar { border-radius: 50%; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .test-avatar { border-radius: 50%; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); flex-shrink: 0; }
+  .test-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   /* NEWSLETTER */
   .newsletter { background: var(--sage-bg); padding: 6rem 3rem; text-align: center; position: relative; overflow: hidden; }
@@ -156,18 +157,12 @@ const css = `
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     .nav { padding: 1rem 1.5rem; }
-    .nav-hamburger { display: flex; }
     .nav-links {
-      display: none;
-      flex-direction: column;
-      position: fixed;
-      top: 60px; left: 0; right: 0;
-      background: rgba(255,255,255,0.97);
-      backdrop-filter: blur(12px);
-      padding: 2rem;
-      gap: 1.5rem;
-      border-bottom: 0.5px solid rgba(0,0,0,0.08);
-      z-index: 99;
+      display: none; flex-direction: column;
+      position: fixed; top: 60px; left: 0; right: 0;
+      background: rgba(255,255,255,0.97); backdrop-filter: blur(12px);
+      padding: 2rem; gap: 1.5rem;
+      border-bottom: 0.5px solid rgba(0,0,0,0.08); z-index: 99;
     }
     .nav-links.open { display: flex; }
     .nav-hamburger.open span:first-child { transform: translateY(6.5px) rotate(45deg); }
@@ -184,9 +179,10 @@ const css = `
   @media (max-width: 600px) {
     .hero-headline { font-size: 2.5rem; }
     .footer-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .nav-links.open { display: flex; }
   }
 `;
-
 
 const openQ  = String.fromCharCode(0x201C);
 const closeQ = String.fromCharCode(0x201D);
@@ -194,7 +190,7 @@ const quoteCss = `.test-card::before { content: '${openQ}${openQ}'; position: ab
 .test-card::after  { content: '${closeQ}${closeQ}'; position: absolute; bottom: 1.5rem; right: 2rem; font-size: 2rem; color: #c9b8f0; line-height: 1; font-family: Georgia, serif; }`;
 
 /* ─── REVEAL HOOK ──────────────────────────────────────────────────────────── */
-function useReveal(variant = "reveal") {
+function useReveal() {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -206,7 +202,7 @@ function useReveal(variant = "reveal") {
     observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
-  return { ref, className: `${variant}${visible ? " visible" : ""}` };
+  return { ref, visible };
 }
 
 /* ─── NAVBAR ───────────────────────────────────────────────────────────────── */
@@ -232,10 +228,14 @@ function Navbar() {
 }
 
 /* ─── HERO ─────────────────────────────────────────────────────────────────── */
-function AvatarBlob({ size, gradient }) {
+function AvatarBlob({ size, src }) {
   return (
     <div className="avatar" style={{ width: size, height: size }}>
-      <div style={{ width:"100%", height:"100%", background: gradient }} />
+      <img
+        src={src}
+        alt="team member"
+        style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }}
+      />
     </div>
   );
 }
@@ -247,11 +247,13 @@ function ColorBlob({ size, delay = 0 }) {
 function Hero() {
   return (
     <section className="hero">
-      <svg style={{ position:"absolute", right:"3%", top:"28%", width:60, opacity:0.8 }} viewBox="0 0 60 90" fill="none">
-        <path d="M30 5 C50 5 58 28 45 45 C32 62 50 75 55 85" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round"/>
+      {/* decorative squiggle right */}
+      <svg style={{ position:"absolute", right:"3%", top:"22%", width:55, opacity:0.85, pointerEvents:"none" }} viewBox="0 0 55 100" fill="none">
+        <path d="M28 5 C48 8 52 30 38 48 C24 66 46 78 50 92" stroke="#e8615a" strokeWidth="2.5" strokeLinecap="round"/>
       </svg>
-      <svg style={{ position:"absolute", left:"2%", top:"40%", width:50, opacity:0.7 }} viewBox="0 0 60 80" fill="none">
-        <path d="M50 5 C20 10 5 35 20 55 C35 75 10 70 5 75" stroke="#e8615a" strokeWidth="2.5" strokeLinecap="round"/>
+      {/* decorative squiggle left */}
+      <svg style={{ position:"absolute", left:"2%", top:"38%", width:45, opacity:0.75, pointerEvents:"none" }} viewBox="0 0 55 90" fill="none">
+        <path d="M48 5 C18 12 5 38 22 56 C38 74 12 72 7 82" stroke="#e8615a" strokeWidth="2.5" strokeLinecap="round"/>
       </svg>
 
       <h1 className="hero-headline">
@@ -260,25 +262,26 @@ function Hero() {
         the <span className="word-highlight-green">status</span> Quo with
       </h1>
       <p className="hero-sub">
-        We are a team of strategists, designers, communicators, researchers.
+        We are a team of strategists, designers communicators, researchers.
         Together, we believe that progress only happens when you refuse to play things safe.
       </p>
       <div className="hero-gallery">
-        <AvatarBlob size={80} gradient="linear-gradient(135deg,#d4a88a,#c49070)" />
+        <AvatarBlob size={80}  src="https://randomuser.me/api/portraits/men/32.jpg" />
         <ColorBlob size={70} />
-        <AvatarBlob size={95} gradient="linear-gradient(135deg,#8fa8c0,#7090b0)" />
+        <AvatarBlob size={95}  src="https://randomuser.me/api/portraits/women/44.jpg" />
         <ColorBlob size={85} delay={-1} />
+        <AvatarBlob size={75}  src="https://randomuser.me/api/portraits/men/67.jpg" />
         <ColorBlob size={55} delay={-3} />
-        <AvatarBlob size={90} gradient="linear-gradient(135deg,#b8a898,#a09080)" />
+        <AvatarBlob size={90}  src="https://randomuser.me/api/portraits/women/21.jpg" />
         <ColorBlob size={75} delay={-2} />
-        <AvatarBlob size={85} gradient="linear-gradient(135deg,#9ab8a0,#789888)" />
+        <AvatarBlob size={85}  src="https://randomuser.me/api/portraits/men/15.jpg" />
       </div>
     </section>
   );
 }
 
 /* ─── FEATURE ROW ──────────────────────────────────────────────────────────── */
-function FeatureRow({ heading, text, reversed = false }) {
+function FeatureRow({ heading, text, reversed = false, imgSrc }) {
   const { ref, visible } = useReveal();
   return (
     <div ref={ref} className={`features-row reveal${visible?" visible":""}${reversed?" reverse":""}`}>
@@ -287,24 +290,23 @@ function FeatureRow({ heading, text, reversed = false }) {
         <p className="feat-p">{text}</p>
         <a href="/" className="read-more">Read more &nbsp;→</a>
       </div>
-      <div className="feat-img-placeholder" style={{ position:"relative" }}>
+      <div style={{ position:"relative" }}>
         {!reversed && (
-          <svg style={{ position:"absolute", top:-10, right:-10, width:60 }} viewBox="0 0 60 60" fill="none">
+          <svg style={{ position:"absolute", top:-14, right:-14, width:60, zIndex:2 }} viewBox="0 0 60 60" fill="none">
             <polygon points="30,5 55,55 5,55" fill="#e8615a" opacity="0.85"/>
           </svg>
         )}
         {reversed && (<>
-          <svg style={{ position:"absolute", bottom:-10, left:-10, width:60 }} viewBox="0 0 60 60" fill="none">
+          <svg style={{ position:"absolute", bottom:-14, left:-14, width:60, zIndex:2 }} viewBox="0 0 60 60" fill="none">
             <polygon points="30,5 55,55 5,55" fill="#e8615a" opacity="0.85"/>
           </svg>
-          <svg style={{ position:"absolute", top:-8, right:-8, width:50 }} viewBox="0 0 50 50" fill="none">
+          <svg style={{ position:"absolute", top:-10, right:-10, width:48, zIndex:2 }} viewBox="0 0 50 50" fill="none">
             <polygon points="25,3 47,47 3,47" fill="#e8615a" opacity="0.5"/>
           </svg>
         </>)}
-        <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-          <circle cx="30" cy="22" r="12" fill="#b0a898"/>
-          <ellipse cx="30" cy="50" rx="22" ry="13" fill="#b0a898"/>
-        </svg>
+        <div className="feat-img-wrap">
+          <img src={imgSrc} alt="feature" />
+        </div>
       </div>
     </div>
   );
@@ -312,15 +314,19 @@ function FeatureRow({ heading, text, reversed = false }) {
 
 /* ─── SERVICES ─────────────────────────────────────────────────────────────── */
 const SERVICES = [
-  { label:"Office of multiple interest content",        name:"Collaborative & partnership" },
+  { label:"Office of multiple interest content",          name:"Collaborative & partnership" },
   { label:"The hanger US Air force digital experimental", name:"We talk about our weight"    },
-  { label:"Delta faucet content, social, digital",      name:"Piloting digital confidence"  },
+  { label:"Delta faucet content, social, digital",        name:"Piloting digital confidence" },
 ];
 
 function Services() {
   const { ref, visible } = useReveal();
   return (
     <section className="services">
+      {/* decorative squiggle top-right */}
+      <svg style={{ position:"absolute", right:"5%", top:"8%", width:80, opacity:0.5, pointerEvents:"none" }} viewBox="0 0 80 120" fill="none">
+        <path d="M40 5 C70 15 75 50 50 70 C25 90 60 105 65 115" stroke="#e8615a" strokeWidth="2" strokeLinecap="round"/>
+      </svg>
       <div className="services-inner">
         <h2 className="services-heading">
           What we <span className="word-highlight-green">can</span><br />
@@ -355,32 +361,37 @@ function Testimonials() {
           says <span className="feat-underline">About Us</span>
         </h2>
         <div ref={ref} className={`test-layout reveal${visible?" visible":""}`}>
+          {/* Left avatars */}
           <div className="test-avatars">
-            <div className="test-blob" style={{ width:55, height:55, marginTop:"2rem" }} />
+            <div className="test-blob" style={{ width:55, height:55 }} />
             <div className="test-avatar" style={{ width:50, height:50 }}>
-              <div style={{ width:"100%", height:"100%", background:"linear-gradient(135deg,#e8a888,#d89070)" }} />
+              <img src="https://randomuser.me/api/portraits/women/55.jpg" alt="reviewer" />
             </div>
-            <div className="test-avatar" style={{ width:90, height:90 }}>
-              <div style={{ width:"100%", height:"100%", background:"linear-gradient(135deg,#9898b8,#7878a0)" }} />
+            <div className="test-avatar" style={{ width:85, height:85 }}>
+              <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="reviewer" />
             </div>
-            <div className="test-blob" style={{ width:70, height:70 }} />
+            <div className="test-blob" style={{ width:65, height:65 }} />
           </div>
+
+          {/* Quote card */}
           <div className="test-card">
             Elementum delivered the site within the timeline as they requested.
             In the end, the client found a 50% increase in traffic within days since its launch.
             They also had an impressive ability to use technologies that the company hasn't used,
             which have also proved to be easy to use and reliable.
           </div>
+
+          {/* Right avatars */}
           <div className="test-avatars">
             <div className="test-avatar" style={{ width:50, height:50 }}>
-              <div style={{ width:"100%", height:"100%", background:"linear-gradient(135deg,#a8c8a0,#88b080)" }} />
+              <img src="https://randomuser.me/api/portraits/women/30.jpg" alt="reviewer" />
             </div>
-            <div className="test-avatar" style={{ width:65, height:65 }}>
-              <div style={{ width:"100%", height:"100%", background:"linear-gradient(135deg,#c8a898,#b08878)" }} />
+            <div className="test-avatar" style={{ width:70, height:70 }}>
+              <img src="https://randomuser.me/api/portraits/men/76.jpg" alt="reviewer" />
             </div>
-            <div className="test-blob" style={{ width:90, height:90 }} />
-            <div className="test-avatar" style={{ width:55, height:55 }}>
-              <div style={{ width:"100%", height:"100%", background:"linear-gradient(135deg,#98b8d8,#7898c0)" }} />
+            <div className="test-blob" style={{ width:85, height:85 }} />
+            <div className="test-avatar" style={{ width:90, height:90 }}>
+              <img src="https://randomuser.me/api/portraits/men/88.jpg" alt="reviewer" />
             </div>
           </div>
         </div>
@@ -394,8 +405,10 @@ function Newsletter() {
   const { ref, visible } = useReveal();
   return (
     <section className="newsletter">
-      <div style={{ position:"absolute", right:"4%", top:"10%", width:90, height:140, background:"#8b5cf6", borderRadius:"0 0 60px 60px", opacity:0.85 }} />
-      <div style={{ position:"absolute", left:"3%", bottom:"15%", width:50, height:50, borderRadius:"50%", background:"#8b5cf6", opacity:0.7 }} />
+      {/* purple pill shape top-right */}
+      <div style={{ position:"absolute", right:"5%", top:"8%", width:80, height:130, background:"#8b5cf6", borderRadius:"0 0 60px 60px", opacity:0.9 }} />
+      {/* purple circle bottom-left */}
+      <div style={{ position:"absolute", left:"4%", bottom:"12%", width:48, height:48, borderRadius:"50%", background:"#8b5cf6", opacity:0.75 }} />
       <div ref={ref} style={{ position:"relative", zIndex:2 }} className={`reveal${visible?" visible":""}`}>
         <h2>Subscribe to<br />our newsletter</h2>
         <p>To make your stay special and even more memorable</p>
@@ -451,15 +464,17 @@ export default function App() {
     <>
       <Navbar />
       <Hero />
-      <section style={{ background:"#fff" }}>
+      <section className="features-section">
         <FeatureRow
           heading={`<span class="feat-underline">Tomorrow</span> should<br/>be better than <span class="word-highlight-green">today</span>`}
           text="We are a team of strategists, designers communicators, researchers. Together, we believe that progress only happens when you refuse to play things safe."
+          imgSrc="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=600&fit=crop"
         />
         <FeatureRow
           heading={`<span class="word-highlight-green">See</span> how we can<br/>help you <span class="feat-underline" style="font-style:italic">progress</span>`}
           text="We add a layer of fearless insights and action that allows change makers to accelerate their progress in areas such as brand, design, digital, comms and social research."
           reversed
+          imgSrc="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=600&fit=crop"
         />
       </section>
       <Services />
